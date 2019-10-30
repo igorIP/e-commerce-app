@@ -1,15 +1,10 @@
 package com.projects.shop.domain.entities.baseEntities.roles;
 
-import com.projects.shop.domain.api.Identifiable;
-import com.projects.shop.domain.entities.baseEntities.BaseEntity;
 import com.projects.shop.domain.entities.baseEntities.BaseUuidEntity;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.Collection;
 import java.util.Set;
-import java.util.UUID;
 
 @Entity
 @Table(name = "users")
@@ -18,21 +13,29 @@ public class User extends BaseUuidEntity implements UserDetails {
     private String username;
     private String email;
     private String password;
-    @ManyToMany(targetEntity = Role.class, fetch = FetchType.EAGER)
-    @JoinTable(name = "users_roles",
-            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
+
     private Set<Role> authorities;
 
     public User() {
     }
 
-    public User(Role authority){
+    public User(Role authority) {
         authorities.add(authority);
     }
 
 
     @Override
+    @Access(AccessType.PROPERTY)
+    @ElementCollection(targetClass = Role.class)
+    @ManyToMany(targetEntity = Role.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "users_roles",
+            joinColumns = {@JoinColumn(
+                    name = "user_id",
+                    referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(
+                    name = "role_id",
+                    referencedColumnName = "id")})
     public Set<Role> getAuthorities() {
         return authorities;
     }

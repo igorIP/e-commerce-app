@@ -1,23 +1,14 @@
 package com.projects.shop.services.implementations;
 
 import com.projects.shop.domain.entities.baseEntities.roles.Role;
-import com.projects.shop.domain.entities.baseEntities.roles.User;
 import com.projects.shop.domain.models.service.RoleServiceModel;
-import com.projects.shop.domain.models.service.UserServiceModel;
 import com.projects.shop.repository.api.RoleRepository;
-import com.projects.shop.repository.api.UserRepository;
 import com.projects.shop.services.api.RoleService;
-import com.projects.shop.services.api.UserService;
-import org.hibernate.stat.CollectionStatistics;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,6 +19,8 @@ public class RoleServiceImpl implements RoleService {
     private final RoleRepository roleRepository;
     private final ModelMapper modelMapper;
 
+    private static Integer count;
+
     @Autowired
     public RoleServiceImpl(final RoleRepository roleRepository,
                            final ModelMapper modelMapper) {
@@ -36,13 +29,16 @@ public class RoleServiceImpl implements RoleService {
     }
 
 
+    //TODO: check why i get duplicate saves of each Role in db,
+    // hint: cascade.All works, but check -> Transaction Management or annotations on User and Role entities
     @Override
     public void seedRolesInDb() {
-        if (roleRepository.count() == 0) {
-            roleRepository.saveAndFlush(new Role("ROLE_ROOT"));
-            roleRepository.saveAndFlush(new Role("ROLE_ADMIN"));
-            roleRepository.saveAndFlush(new Role("ROLE_MODERATOR"));
-            roleRepository.saveAndFlush(new Role("ROLE_USER"));
+        if (count == null) {
+            count = 1;
+            roleRepository.save(new Role("ROLE_ROOT"));
+            roleRepository.save(new Role("ROLE_ADMIN"));
+            roleRepository.save(new Role("ROLE_MODERATOR"));
+            roleRepository.save(new Role("ROLE_USER"));
         }
     }
 

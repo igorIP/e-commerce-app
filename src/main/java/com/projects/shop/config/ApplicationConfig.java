@@ -6,18 +6,21 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import java.util.TimeZone;
 
 @Configuration
 public class ApplicationConfig {
 
     @Bean
-    ModelMapper getModelMapper() {
+    public ModelMapper getModelMapper() {
         return new ModelMapper();
     }
 
     @Bean
-    BCryptPasswordEncoder getBCryptPasswordEncoder() {
+    public BCryptPasswordEncoder getBCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
@@ -25,7 +28,7 @@ public class ApplicationConfig {
      * Set system {@link TimeZone} to {@value #"UTC"} to match setting used for database connection
      */
     @PostConstruct
-    void started() {
+    public void started() {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     }
 }

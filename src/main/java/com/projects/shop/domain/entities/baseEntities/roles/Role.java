@@ -4,17 +4,14 @@ import com.projects.shop.domain.entities.baseEntities.BaseUuidEntity;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
-import java.util.Collection;
 import java.util.Set;
+
 
 @Entity
 @Table(name = "roles")
 public class Role extends BaseUuidEntity implements GrantedAuthority {
 
-    @Column(name = "authority", nullable = false, updatable = false)
     private String authority;
-
-    @ManyToMany(mappedBy = "authorities", targetEntity = User.class, fetch = FetchType.EAGER)
     private Set<User> users;
 
     public Role() {
@@ -26,6 +23,7 @@ public class Role extends BaseUuidEntity implements GrantedAuthority {
 
 
     @Override
+    @Column(name = "authority", nullable = false, updatable = false)
     public String getAuthority() {
         return authority;
     }
@@ -34,6 +32,12 @@ public class Role extends BaseUuidEntity implements GrantedAuthority {
         this.authority = authority;
     }
 
+    @Access(AccessType.PROPERTY)//Important: app doesn't work without it
+    @ElementCollection(targetClass = Role.class)
+    @ManyToMany(mappedBy = "authorities",
+            targetEntity = User.class,
+            fetch = FetchType.EAGER,
+            cascade = CascadeType.ALL)
     public Set<User> getUsers() {
         return users;
     }
