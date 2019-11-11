@@ -2,6 +2,7 @@ package com.projects.shop.domain.models.service;
 
 import com.projects.shop.domain.entities.baseEntities.roles.Role;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class UserServiceModel extends BaseServiceModel {
@@ -12,6 +13,8 @@ public class UserServiceModel extends BaseServiceModel {
     private Set<RoleServiceModel> authorities;
 
     protected UserServiceModel() {
+        authorities = new HashSet<>();
+
     }
 
     public String getUsername() {

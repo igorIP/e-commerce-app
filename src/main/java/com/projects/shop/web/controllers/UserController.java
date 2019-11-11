@@ -27,6 +27,8 @@ public class UserController extends BaseController {
     private final ModelMapper mapper;
     private final BCryptPasswordEncoder passwordEncoder;
 
+    private static int usersCount = 0;
+
     public UserController(final UserService userService,
                           final RoleService roleService,
                           final ModelMapper mapper,
@@ -39,15 +41,17 @@ public class UserController extends BaseController {
 
     @GetMapping("/register")
     @PreAuthorize("isAnonymous()")
-    public ModelAndView registerGet() {
+    public ModelAndView register() {
+        if (usersCount == 0) {
+            usersCount++;
+        }
         return super.view("register");
     }
 
     @PostMapping("/register")
     @PreAuthorize("isAnonymous()")
-    public ModelAndView registerPost(@ModelAttribute("registerModel") UserRegisterBindingModel bindingModel,
-                                     BindingResult result) {
-        if (result.hasErrors() || !(bindingModel.getPassword().equals(bindingModel.getConfirmPassword()))) {
+    public ModelAndView registerConfirm(@ModelAttribute("registerModel") UserRegisterBindingModel bindingModel) {
+        if (!(bindingModel.getPassword().equals(bindingModel.getConfirmPassword()))) {
             return super.redirect("register");
         } else {
             userService.registerUser(mapper.map(bindingModel, UserServiceModel.class));
@@ -72,7 +76,7 @@ public class UserController extends BaseController {
             if (passwordEncoder.matches(userDetails.getPassword(), bindingModel.getPassword())) {
                 return view("index");
             }
-            return view("login");
+            return view("index");
         }
     }
 }

@@ -4,6 +4,7 @@ import com.projects.shop.domain.entities.baseEntities.BaseUuidEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -17,17 +18,16 @@ public class User extends BaseUuidEntity implements UserDetails {
     private Set<Role> authorities;
 
     public User() {
+        authorities = new HashSet<>();
     }
 
     public User(Role authority) {
+        authorities = new HashSet<>();
         authorities.add(authority);
     }
 
-
     @Override
-    @Access(AccessType.PROPERTY)
-    @ElementCollection(targetClass = Role.class)
-    @ManyToMany(targetEntity = Role.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(targetEntity = Role.class, fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_roles",
             joinColumns = {@JoinColumn(
