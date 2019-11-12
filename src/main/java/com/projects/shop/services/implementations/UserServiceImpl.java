@@ -54,8 +54,6 @@ public class UserServiceImpl implements UserService {
         EntityManager entityManager = getEM();
         entityManager.getTransaction().begin();
 
-        roleService.seedRolesInDb();
-
         if (userRepository.count() == 0) {
             assignUserRoles(userServiceModel, 0);
         } else {

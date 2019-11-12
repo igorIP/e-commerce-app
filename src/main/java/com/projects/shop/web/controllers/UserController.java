@@ -54,6 +54,8 @@ public class UserController extends BaseController {
         if (!(bindingModel.getPassword().equals(bindingModel.getConfirmPassword()))) {
             return super.redirect("register");
         } else {
+            roleService.seedRolesInDb();
+
             userService.registerUser(mapper.map(bindingModel, UserServiceModel.class));
             return new ModelAndView("login");
         }
@@ -67,7 +69,7 @@ public class UserController extends BaseController {
 
     @PostMapping("/login")
     @PreAuthorize("isAnonymous()")
-    public ModelAndView loginPost(@ModelAttribute("loginModel") UserLoginBindingModel bindingModel,
+    public ModelAndView loginConfirm(@ModelAttribute("loginModel") UserLoginBindingModel bindingModel,
                                   BindingResult result) {
         UserDetails userDetails = userService.loadUserByUsername(bindingModel.getUsername());
         if (result.hasErrors() || userDetails != null) {
