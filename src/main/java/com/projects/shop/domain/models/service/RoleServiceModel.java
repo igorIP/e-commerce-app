@@ -4,7 +4,7 @@ public class RoleServiceModel extends BaseServiceModel {
 
     private String authority;
 
-    protected RoleServiceModel() {
+    public RoleServiceModel() {
     }
 
     public String getAuthority() {

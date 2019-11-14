@@ -43,6 +43,7 @@ public class UserController extends BaseController {
     @PreAuthorize("isAnonymous()")
     public ModelAndView register() {
         if (usersCount == 0) {
+            roleService.seedRolesInDb();//refactor
             usersCount++;
         }
         return super.view("register");
@@ -50,35 +51,39 @@ public class UserController extends BaseController {
 
     @PostMapping("/register")
     @PreAuthorize("isAnonymous()")
-    public ModelAndView registerConfirm(@ModelAttribute("registerModel") UserRegisterBindingModel bindingModel) {
-        if (!(bindingModel.getPassword().equals(bindingModel.getConfirmPassword()))) {
-            return super.redirect("register");
-        } else {
-            roleService.seedRolesInDb();
+    public ModelAndView registerConfirm(
+            ModelAndView modelAndView,
+            @ModelAttribute("bindingModel") UserRegisterBindingModel bindingModel,
+            BindingResult bindingResult) {
 
-            userService.registerUser(mapper.map(bindingModel, UserServiceModel.class));
-            return new ModelAndView("login");
+        if (bindingResult.hasErrors()) {
+            bindingModel.setPassword(null);
+            bindingModel.setConfirmPassword(null);
+            modelAndView.addObject("model", bindingModel);
+
+            return super.view("/register", modelAndView);
         }
+
+        userService.registerUser(mapper.map(bindingModel, UserServiceModel.class));
+        return super.redirect("/login");
     }
 
     @GetMapping("/login")
     @PreAuthorize("isAnonymous()")
-    public ModelAndView loginGet() {
-        return view("login");
+    public ModelAndView login() {
+        return super.view("/login");
     }
 
-    @PostMapping("/login")
-    @PreAuthorize("isAnonymous()")
-    public ModelAndView loginConfirm(@ModelAttribute("loginModel") UserLoginBindingModel bindingModel,
-                                  BindingResult result) {
-        UserDetails userDetails = userService.loadUserByUsername(bindingModel.getUsername());
-        if (result.hasErrors() || userDetails != null) {
-            return view("login");
-        } else {
-            if (passwordEncoder.matches(userDetails.getPassword(), bindingModel.getPassword())) {
-                return view("index");
-            }
-            return view("index");
-        }
-    }
+//    @PostMapping("/login")
+//    @PreAuthorize("isAnonymous()")
+//    public ModelAndView loginConfirm(@ModelAttribute("loginModel") UserLoginBindingModel bindingModel,
+//                                     BindingResult result) {
+//        UserDetails userDetails = userService.loadUserByUsername(bindingModel.getUsername());
+//        if (result.hasErrors() || userDetails != null) {
+//            return view("login");
+//        } else if (passwordEncoder.matches(userDetails.getPassword(), bindingModel.getPassword())) {
+//            return super.view("index");
+//        }
+//        return super.view("index");
+//    }
 }

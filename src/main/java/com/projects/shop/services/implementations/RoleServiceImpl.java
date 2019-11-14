@@ -24,11 +24,6 @@ public class RoleServiceImpl implements RoleService {
 
     private EntityManagerFactory emf;
 
-    @PersistenceUnit
-    public void setEntityManagerFactory(EntityManagerFactory emf) {
-        this.emf = emf;
-    }
-
     @Autowired
     public RoleServiceImpl(final RoleRepository roleRepository,
                            final ModelMapper modelMapper) {
@@ -36,6 +31,10 @@ public class RoleServiceImpl implements RoleService {
         this.modelMapper = modelMapper;
     }
 
+    @PersistenceUnit
+    public void setEntityManagerFactory(EntityManagerFactory emf) {
+        this.emf = emf;
+    }
 
     /**
      * empty users_roles table only for the first user:
